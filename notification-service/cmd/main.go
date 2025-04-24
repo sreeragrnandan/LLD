@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	"notification-service/api"
 	"notification-service/internal/dispatcher"
 	"notification-service/internal/notifier"
 	"notification-service/internal/schedular"
@@ -31,4 +34,17 @@ func main() {
 
 	// Wait for scheduled tasks to complete
 	time.Sleep(2 * time.Second)
+
+	// Optinal: just for upping api server
+	apiHandler := &api.APIHandler{
+		Dispatcher: &d,
+	}
+
+	router := api.NewRouter(apiHandler)
+
+	log.Println("Starting server on :8080")
+	if err := http.ListenAndServe(":8080", router); err != nil {
+		log.Fatalf("Server failed to start: %v", err)
+	}
+
 }
